@@ -77,7 +77,7 @@ bool do_exec(int count, ...)
 
 	// Lets fork from this process and save the new prcoess ID
 	pid_t processID = fork();
-
+                
 	switch(processID)
 	{
                 // If we see a processID of -1, we are the parent process and the Fork Failed
@@ -89,7 +89,7 @@ bool do_exec(int count, ...)
 
 		// If we see a processID of 0, we are the child process, so lets execute the command
 		case 0:
-      		{
+      		{	
 			// If execv does not exit the process, then it will return here and continue
 	      		execv(command[0], (command));
 
@@ -100,20 +100,23 @@ bool do_exec(int count, ...)
 
 		// If we see any other processID, we are the parent process, and the fork succeeded
 		default:
-    		{	
+    		{
 			// If the child wraps with a processID of -1, there was some sort of error
 			if(waitpid(processID, &status, 0) == -1)
-			{
 				return false;
-			}
+			
+			// If the child wrapped successfully, return true
+			if((WIFEXITED(status)) && (WEXITSTATUS(status) == 0))
+				return true;
 
-			// Else the child wrapped successfully with a return status
-			// Lets return the return status
-			return (bool)WIFEXITED(status);
-			break;
+			// Else return false
+			else
+				return false;
+			
       		}
 	}
 }
+
 /**
 * @param outputfile - The full path to the file to write with command output.
 *   This file will be closed at completion of the function call.
@@ -167,7 +170,8 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
                 case 0:
                 {
                         // If redirection operation fails exit the child process
-                        if(dup2(fd, 1) < 0) exit(-1);
+                        if(dup2(fd, 1) < 0)
+			       exit(-1);
 
                         // If execv does not exit the process, then it will return here and continue
                         execv(command[0], (command));
@@ -182,17 +186,16 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
                 {
                         // If the child wraps with a processID of -1, there was some sort of error
                         if(waitpid(processID, &status, 0) == -1)
-                        {
-				// Close the file and return
-				close(fd);
-                                return false;
-                        }
+			{close(fd); return false;}
 
-                        // Else the child wrapped successfully with a return status
-                        // Lets close the file and return the return status
-			close(fd);
-                        return (bool)WIFEXITED(status);
-                        break;
+                        // If the child wrapped successfully, return true
+                        if((WIFEXITED(status)) && (WEXITSTATUS(status) == 0))
+			{close(fd); return true;}
+
+			// Else return false
+			else
+			{close(fd); return false;}
+                        
                 }
         }
 }
