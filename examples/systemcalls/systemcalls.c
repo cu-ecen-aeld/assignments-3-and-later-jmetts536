@@ -1,4 +1,10 @@
 #include "systemcalls.h"
+#include "unistd.h"
+#include "stdlib.h"
+#include "inttypes.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -16,10 +22,16 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+	if(system(cmd) == 0)
+	{    
+		return true;
+	}
 
-    return true;
+	else
+	{
+		return false;	
+	}	
 }
-
 /**
 * @param count -The numbers of variables passed to the function. The variables are command to execute.
 *   followed by arguments to pass to the command
@@ -58,12 +70,50 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+	va_end(args);
+   
+	// Lets get a status variable we can give to the waitpid command for debugging
+	int status;
 
-    va_end(args);
+	// Lets fork from this process and save the new prcoess ID
+	pid_t processID = fork();
 
-    return true;
+	switch(processID)
+	{
+                // If we see a processID of -1, we are the parent process and the Fork Failed
+		case -1:
+		{
+			return false;
+	      		break;
+      		}
+
+		// If we see a processID of 0, we are the child process, so lets execute the command
+		case 0:
+      		{
+			// If execv does not exit the process, then it will return here and continue
+	      		execv(command[0], (command));
+
+			// Exit the process with -1 to indicate that execv failed
+			exit(-1);
+			break;
+     		}
+
+		// If we see any other processID, we are the parent process, and the fork succeeded
+		default:
+    		{	
+			// If the child wraps with a processID of -1, there was some sort of error
+			if(waitpid(processID, &status, 0) == -1)
+			{
+				return false;
+			}
+
+			// Else the child wrapped successfully with a return status
+			// Lets return the return status
+			return (bool)WIFEXITED(status);
+			break;
+      		}
+	}
 }
-
 /**
 * @param outputfile - The full path to the file to write with command output.
 *   This file will be closed at completion of the function call.
@@ -95,5 +145,54 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 
     va_end(args);
 
-    return true;
+    	// Lets create a new fd to direct stdout to
+	int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+
+        // Lets get a status variable we can give to the waitpid command for debugging
+        int status;
+
+        // Lets fork from this process and save the new prcoess ID
+        pid_t processID = fork();
+
+        switch(processID)
+        {
+                // If we see a processID of -1, we are the parent process and the Fork Failed
+                case -1:
+                {
+                        return false;
+                        break;
+                }
+
+                // If we see a processID of 0, we are the child process, so lets execute the command
+                case 0:
+                {
+                        // If redirection operation fails exit the child process
+                        if(dup2(fd, 1) < 0) exit(-1);
+
+                        // If execv does not exit the process, then it will return here and continue
+                        execv(command[0], (command));
+
+                        // Exit the process with -1 to indicate that execv failed
+                        exit(-1);
+                        break;
+                }
+
+                // If we see any other processID, we are the parent process, and the fork succeeded
+                default:
+                {
+                        // If the child wraps with a processID of -1, there was some sort of error
+                        if(waitpid(processID, &status, 0) == -1)
+                        {
+				// Close the file and return
+				close(fd);
+                                return false;
+                        }
+
+                        // Else the child wrapped successfully with a return status
+                        // Lets close the file and return the return status
+			close(fd);
+                        return (bool)WIFEXITED(status);
+                        break;
+                }
+        }
 }
