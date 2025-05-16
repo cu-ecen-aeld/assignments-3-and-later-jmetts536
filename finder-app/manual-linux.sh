@@ -18,8 +18,17 @@ CROSS_COMPILE=aarch64-none-linux-gnu-
 # --------------------------------------------------------------------------------------------------------------------
 
 echo "Github Runner Test"
-pwd
-cp ~/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}
+echo ${FINDER_APP_DIR}
+
+echo "running as user: $(whoami)"
+
+echo "User ID: $(id)"
+
+echo "Home directory: $HOME"
+
+LIB_PATH=$(dirname $(which ${CROSS_COMPILE}readelf))/../aarch64-none-linux-gnu/libc
+echo ${LIB_PATH}
+cp "${LIB_PATH}"/lib/ld-linux-aarch64.so.1 ${OUTDIR}
 exit 1
 
 # Assign a value to OUTDIR based on provided argument if one provided, else use the default
@@ -217,7 +226,7 @@ sudo mknod -m 666 ${OUTDIR}/rootfs/dev/console c 5 1
 # TODO: Clean and build the writer utility
 
 # Navigate to the Finder-App Directory
-cd "/home/jmetts/aesd-assignments/finder-app"
+cd ${FINDER_APP_DIR}
 
 # Clean Any Previous Artifacts to Prepare for New Build
 echo "Cleaning Writer Utility"
@@ -229,7 +238,7 @@ make CROSS_COMPILE=${CROSS_COMPILE} all
 
 # Copy the newly generated Writer Utility into Root File System /home
 echo "Copying Writer Utility to Root File System"
-cp "/home/jmetts/aesd-assignments/finder-app/writer" "${OUTDIR}/rootfs/home"
+cp "${FINDER_APP_DIR}/writer" "${OUTDIR}/rootfs/home"
 
 # Navigate to output directory OUTDIR
 cd ${OUTDIR}
