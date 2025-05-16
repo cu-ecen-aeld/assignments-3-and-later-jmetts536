@@ -1,12 +1,11 @@
+#!/bin/sh
+
 # Write a script that takes two arguments
 # Argument 1 - filesdir -  specifies a filesystem path
 # Argument 2 - searchstr -  specifies a test string to search for in filesdir
 # Script should exit with 1 error and error message if any parameter not specified
 # Script should exit with 1 error and error message if filesdir dows not exist
 # Script should print "The number of files are X and the number of matching lines are Y"
-
-#SHEBANG
-#!/bin/sh
 
 # Check that two arguments were passed to the script
 if [ $# -ne 2 ]
