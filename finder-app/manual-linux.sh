@@ -17,20 +17,6 @@ CROSS_COMPILE=aarch64-none-linux-gnu-
 # Create Output Directory OUTDIR
 # --------------------------------------------------------------------------------------------------------------------
 
-echo "Github Runner Test"
-echo ${FINDER_APP_DIR}
-
-echo "running as user: $(whoami)"
-
-echo "User ID: $(id)"
-
-echo "Home directory: $HOME"
-
-LIB_PATH=$(dirname $(which ${CROSS_COMPILE}readelf))/../aarch64-none-linux-gnu/libc
-echo ${LIB_PATH}
-cp "${LIB_PATH}"/lib/ld-linux-aarch64.so.1 ${OUTDIR}
-exit 1
-
 # Assign a value to OUTDIR based on provided argument if one provided, else use the default
 if [ $# -lt 1 ]
 then
@@ -156,7 +142,14 @@ if [ ! -d "${OUTDIR}/busybox" ]; then
    
 	# TODO:  Configure busybox
 	
-	# Do Stuff Here
+	# Clean any previous build artifacts to prepare for new build
+	echo "Cleaning Busybox Build"
+	make distclean
+
+	# Build the default configuration defconfig
+	echo "Building Default Configuration for Busybox Build"
+	make defconfig
+
 else
 	echo "Busybox Submodule Found"
     	cd busybox
@@ -167,14 +160,6 @@ fi
 # --------------------------------------------------------------------------------------------------------------------
 
 # TODO: Make and install busybox
-
-# Clean any previous build artifacts to prepare for new build
-echo "Cleaning Busybox Build"
-make distclean
-
-# Build the default configuration defconfig
-echo "Building Default Configuration for Busybox Build"
-make defconfig
 
 # Specify arcitecture and cross compiler
 echo "Building Busybox with specified ARCH and CROSS_COMPILE"
@@ -197,13 +182,13 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # Copy the Program Interpreter to rootfs
 echo "Copying Program Interpreter from ARM GNU Toolchain Folder to Root File System"
-cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1" "${OUTDIR}/rootfs/lib"
+cp "${FINDER_APP_DIR}/../arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1" "${OUTDIR}/rootfs/lib"
 
 # Copy the libraries to rootfs
 echo "Copying Libraries from ARM GNU Toolchain Folder to Root File System"
-cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6" "${OUTDIR}/rootfs/lib64"
-cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2" "${OUTDIR}/rootfs/lib64"
-cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6" "${OUTDIR}/rootfs/lib64"
+cp "${FINDER_APP_DIR}/../arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6" "${OUTDIR}/rootfs/lib64"
+cp "${FINDER_APP_DIR}/../arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2" "${OUTDIR}/rootfs/lib64"
+cp "${FINDER_APP_DIR}/../arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6" "${OUTDIR}/rootfs/lib64"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Create Device Nodes in the Root File System
@@ -252,10 +237,10 @@ cd ${OUTDIR}
 
 # Copy Assignment Scripts/Files into Root File System /home
 echo "Copying Assignment Scripts and Files to Root File System"
-cp "/home/jmetts/aesd-assignments/finder-app/finder.sh" "${OUTDIR}/rootfs/home"
-cp -r "/home/jmetts/aesd-assignments/conf" "${OUTDIR}/rootfs/home"
-cp "/home/jmetts/aesd-assignments/finder-app/finder-test.sh" "${OUTDIR}/rootfs/home"
-cp "/home/jmetts/aesd-assignments/finder-app/autorun-qemu.sh" "${OUTDIR}/rootfs/home"
+cp "${FINDER_APP_DIR}/finder.sh" "${OUTDIR}/rootfs/home"
+cp -r "${FINDER_APP_DIR}/../conf" "${OUTDIR}/rootfs/home"
+cp "${FINDER_APP_DIR}/finder-test.sh" "${OUTDIR}/rootfs/home"
+cp "${FINDER_APP_DIR}/autorun-qemu.sh" "${OUTDIR}/rootfs/home"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Change the Owner of the rootfs Directory
