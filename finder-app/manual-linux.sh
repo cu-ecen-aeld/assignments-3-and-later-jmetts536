@@ -184,13 +184,13 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # Copy the Program Interpreter to rootfs
 echo "Copying Program Interpreter from ARM GNU Toolchain Folder to Root File System"
-cp "${HOME}/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1" "${OUTDIR}/rootfs/lib"
+cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1" "${OUTDIR}/rootfs/lib"
 
 # Copy the libraries to rootfs
 echo "Copying Libraries from ARM GNU Toolchain Folder to Root File System"
-cp "${HOME}/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6" "${OUTDIR}/rootfs/lib64"
-cp "${HOME}/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2" "${OUTDIR}/rootfs/lib64"
-cp "${HOME}/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6" "${OUTDIR}/rootfs/lib64"
+cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6" "${OUTDIR}/rootfs/lib64"
+cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2" "${OUTDIR}/rootfs/lib64"
+cp "/home/jmetts/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6" "${OUTDIR}/rootfs/lib64"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Create Device Nodes in the Root File System
@@ -213,7 +213,7 @@ sudo mknod -m 666 ${OUTDIR}/rootfs/dev/console c 5 1
 # TODO: Clean and build the writer utility
 
 # Navigate to the Finder-App Directory
-cd "${HOME}/aesd-assignments/finder-app"
+cd "/home/jmetts/aesd-assignments/finder-app"
 
 # Clean Any Previous Artifacts to Prepare for New Build
 echo "Cleaning Writer Utility"
@@ -225,7 +225,7 @@ make CROSS_COMPILE=${CROSS_COMPILE} all
 
 # Copy the newly generated Writer Utility into Root File System /home
 echo "Copying Writer Utility to Root File System"
-cp "${HOME}/aesd-assignments/finder-app/writer" "${OUTDIR}/rootfs/home"
+cp "/home/jmetts/aesd-assignments/finder-app/writer" "${OUTDIR}/rootfs/home"
 
 # Navigate to output directory OUTDIR
 cd ${OUTDIR}
@@ -239,10 +239,10 @@ cd ${OUTDIR}
 
 # Copy Assignment Scripts/Files into Root File System /home
 echo "Copying Assignment Scripts and Files to Root File System"
-cp "${HOME}/aesd-assignments/finder-app/finder.sh" "${OUTDIR}/rootfs/home"
-cp -r "${HOME}/aesd-assignments/conf" "${OUTDIR}/rootfs/home"
-cp "${HOME}/aesd-assignments/finder-app/finder-test.sh" "${OUTDIR}/rootfs/home"
-cp "${HOME}/aesd-assignments/finder-app/autorun-qemu.sh" "${OUTDIR}/rootfs/home"
+cp "/home/jmetts/aesd-assignments/finder-app/finder.sh" "${OUTDIR}/rootfs/home"
+cp -r "/home/jmetts/aesd-assignments/conf" "${OUTDIR}/rootfs/home"
+cp "/home/jmetts/aesd-assignments/finder-app/finder-test.sh" "${OUTDIR}/rootfs/home"
+cp "/home/jmetts/aesd-assignments/finder-app/autorun-qemu.sh" "${OUTDIR}/rootfs/home"
 
 # --------------------------------------------------------------------------------------------------------------------
 # Change the Owner of the rootfs Directory
