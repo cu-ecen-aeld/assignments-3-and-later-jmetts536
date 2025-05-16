@@ -18,7 +18,7 @@ CROSS_COMPILE=aarch64-none-linux-gnu-
 # --------------------------------------------------------------------------------------------------------------------
 
 echo "Github Runner Test"
-cp ~arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}
+cp ~/arm-gnu-toolchains/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}
 exit 1
 
 # Assign a value to OUTDIR based on provided argument if one provided, else use the default
