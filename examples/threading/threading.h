@@ -7,19 +7,55 @@
  * It should be returned by your thread so it can be freed by
  * the joiner thread.
  */
-struct thread_data{
-    /*
-     * TODO: add other values your thread will need to manage
-     * into this structure, use this structure to communicate
-     * between the start_thread_obtaining_mutex function and
-     * your thread implementation.
-     */
+struct thread_data
+{
+    	/*
+     	* TODO: add other values your thread will need to manage
+     	* into this structure, use this structure to communicate
+     	* between the start_thread_obtaining_mutex function and
+     	* your thread implementation.
+     	*/
 
-    /**
-     * Set to true if the thread completed with success, false
-     * if an error occurred.
-     */
-    bool thread_complete_success;
+	/**
+	 * Thread ID
+	 */
+	pthread_t *thread_data_thread_id;
+
+	/**
+	 * Thread Attributes
+	 */
+	pthread_attr_t *thread_data_thread_attr;
+
+	/**
+	 * Thread Error Status
+	 */
+	int thread_data_thread_error;
+
+	/**
+	 * Mutex to Lock and Unlock Data Struct
+	 */
+	pthread_mutex_t *thread_data_mutex;
+
+	/**
+	 * Mutex Error Status
+	 */
+	int thread_data_mutex_error;
+
+	/**
+	 * How many MS to wait before thread should acquire Mutex
+	 */
+	unsigned int thread_data_wait_to_obtain_ms;
+
+	/**
+	 * How many MS to wait before thread should release Mutex
+	 */
+	unsigned int thread_data_wait_to_release_ms;	
+
+    	/**
+     	* Set to true if the thread completed with success, false
+     	* if an error occurred.
+     	*/
+    	bool thread_complete_success;
 };
 
 
